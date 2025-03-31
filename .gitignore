@@ -1,0 +1,8 @@
+# output
+bin/
+
+# database
+*.db
+
+# secrets
+.env
