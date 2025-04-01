@@ -62,3 +62,19 @@ func (q *Queries) GetAllergen(ctx context.Context) ([]Allergen, error) {
 	}
 	return items, nil
 }
+
+const getAllergenById = `-- name: GetAllergenById :one
+SELECT id, name, img, info FROM allergens WHERE id = ?
+`
+
+func (q *Queries) GetAllergenById(ctx context.Context, id int64) (Allergen, error) {
+	row := q.db.QueryRowContext(ctx, getAllergenById, id)
+	var i Allergen
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Img,
+		&i.Info,
+	)
+	return i, err
+}

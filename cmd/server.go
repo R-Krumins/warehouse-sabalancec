@@ -3,8 +3,10 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"warehouse/internal/database"
 
 	"github.com/go-chi/chi/v5"
@@ -28,8 +30,14 @@ func NewServer(db *sql.DB, query *database.Queries) Server {
 	}
 
 	r.Use(middleware.Logger)
+
 	r.Get("/api/product", s.handleGetProduct)
 	r.Post("/api/product", s.handleCreateProduct)
+	r.Get("/api/product/{id}", s.handleGetProductById)
+
+	r.Get("/api/allergen", s.handleGetAllergen)
+	r.Post("/api/allergen", s.handleCreateAllergen)
+	r.Get("/api/allergen/{id}", s.handleGetAllergenById)
 
 	return s
 }
@@ -68,4 +76,13 @@ func WriteError(w http.ResponseWriter, status int, msg string) {
 	if status > 499 {
 		log.Printf("RESPONSE SATUS 5xx: %s", msg)
 	}
+}
+
+func GetIdFromRequest(r *http.Request) (int64, error) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		return 0, fmt.Errorf("empty ID")
+	}
+
+	return strconv.ParseInt(id, 10, 64)
 }
