@@ -9,14 +9,16 @@ import (
 
 func (s *Server) handleGetProduct(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-
-	products, err := s.query.GetProduct(ctx)
-	if err != nil {
-		WriteError(w, 500, "Could not retrieve products")
-		return
-	}
-
-	WriteJSON(w, 200, products)
+	DBGet(w, s.query.GetProduct, ctx)
+	// ctx := r.Context()
+	//
+	// products, err := s.query.GetProduct(ctx)
+	// if err != nil {
+	// 	WriteError(w, 500, "Could not retrieve products")
+	// 	return
+	// }
+	//
+	// WriteJSON(w, 200, products)
 }
 
 func (s *Server) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
