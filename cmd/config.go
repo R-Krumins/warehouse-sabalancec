@@ -7,8 +7,9 @@ import (
 )
 
 type Config struct {
-	port   string
-	dbPath string
+	port       string
+	dbPath     string
+	authApiKey string
 }
 
 func loadConfig() Config {
@@ -24,5 +25,10 @@ func loadConfig() Config {
 		log.Fatal("No PORT environment variable defined")
 	}
 
-	return Config{port, dbPath}
+	authApiKey := os.Getenv("AUTH_API_KEY")
+	if authApiKey == "" {
+		log.Fatal("No AUTH_API_KEY environment variable defined")
+	}
+
+	return Config{port, dbPath, authApiKey}
 }

@@ -17,9 +17,10 @@ type Server struct {
 	router *chi.Mux
 	query  *database.Queries
 	db     *sql.DB
+	cfg    Config
 }
 
-func NewServer(db *sql.DB, query *database.Queries) Server {
+func NewServer(db *sql.DB, query *database.Queries, cfg Config) Server {
 
 	r := chi.NewRouter()
 
@@ -27,6 +28,7 @@ func NewServer(db *sql.DB, query *database.Queries) Server {
 		router: r,
 		query:  query,
 		db:     db,
+		cfg:    cfg,
 	}
 
 	r.Use(middleware.Logger)
@@ -81,6 +83,17 @@ func WriteError(w http.ResponseWriter, status int, msg string) {
 	}
 }
 
+func WriteSuccess(w http.ResponseWriter, status int, msg string) {
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(status)
+
+	type Res struct {
+		Success string `json:"success"`
+	}
+
+	json.NewEncoder(w).Encode(Res{Success: msg})
+}
+
 func GetIdFromRequest(r *http.Request) (int64, error) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -88,4 +101,17 @@ func GetIdFromRequest(r *http.Request) (int64, error) {
 	}
 
 	return strconv.ParseInt(id, 10, 64)
+}
+
+func hasValidApiKey(r *http.Request, apiKey string) bool {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		return false
+	}
+
+	if authHeader != "ApiKey "+apiKey {
+		return false
+	}
+
+	return true
 }

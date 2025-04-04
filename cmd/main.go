@@ -17,7 +17,7 @@ func main() {
 	}
 
 	queries := database.New(db)
-	server := NewServer(db, queries)
+	server := NewServer(db, queries, cfg)
 
 	server.Run(cfg.port)
 }

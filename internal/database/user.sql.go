@@ -10,8 +10,8 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (uuid, name, email, address)
-VALUES (?, ?, ?, ?) RETURNING uuid, name, email, address
+INSERT INTO users (uuid, name, email, address, role)
+VALUES (?, ?, ?, ?, ?) RETURNING uuid, name, email, address, role
 `
 
 type CreateUserParams struct {
@@ -19,6 +19,7 @@ type CreateUserParams struct {
 	Name    string `json:"name"`
 	Email   string `json:"email"`
 	Address string `json:"address"`
+	Role    string `json:"role"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -27,6 +28,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Name,
 		arg.Email,
 		arg.Address,
+		arg.Role,
 	)
 	var i User
 	err := row.Scan(
@@ -34,12 +36,13 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Name,
 		&i.Email,
 		&i.Address,
+		&i.Role,
 	)
 	return i, err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT uuid, name, email, address FROM users
+SELECT uuid, name, email, address, role FROM users
 WHERE uuid = ?
 `
 
@@ -51,6 +54,7 @@ func (q *Queries) GetUser(ctx context.Context, uuid string) (User, error) {
 		&i.Name,
 		&i.Email,
 		&i.Address,
+		&i.Role,
 	)
 	return i, err
 }

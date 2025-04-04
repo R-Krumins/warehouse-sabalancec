@@ -3,7 +3,8 @@ CREATE TABLE users (
 	uuid TEXT PRIMARY KEY,
 	name TEXT NOT NULL,
 	email TEXT NOT NULL,
-	address TEXT NOT NULL
+	address TEXT NOT NULL,
+	role TEXT NOT NULL
 );
 
 -- +goose Down
