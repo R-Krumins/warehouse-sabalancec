@@ -23,3 +23,10 @@ type ProductAllergen struct {
 	ProductFk  int64 `json:"product_fk"`
 	AllergenFk int64 `json:"allergen_fk"`
 }
+
+type User struct {
+	Uuid    string `json:"uuid"`
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Address string `json:"address"`
+}

@@ -39,6 +39,9 @@ func NewServer(db *sql.DB, query *database.Queries) Server {
 	r.Post("/api/allergen", s.handleCreateAllergen)
 	r.Get("/api/allergen/{id}", s.handleGetAllergenById)
 
+	r.Get("/api/user/{uuid}", s.handleGetUser)
+	r.Post("/api/user", s.handleCreateUser)
+
 	return s
 }
 
