@@ -55,20 +55,20 @@ func (s *Server) Run(port string) {
 	}
 }
 
-func WriteJSON(w http.ResponseWriter, status int, payload any) {
+func ResWithJSON(w http.ResponseWriter, status int, payload any) {
 	w.Header().Add("Content-Type", "application/json")
 
 	data, err := json.Marshal(payload)
 	if err != nil {
 		log.Printf("Failed to marashal respone payload! %v\n", err)
-		WriteError(w, 500, "Failed to marshal payload")
+		ResWithError(w, 500, "Failed to marshal payload")
 	}
 
 	w.WriteHeader(status)
 	w.Write(data)
 }
 
-func WriteError(w http.ResponseWriter, status int, msg string) {
+func ResWithError(w http.ResponseWriter, status int, msg string) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(status)
 
@@ -83,7 +83,7 @@ func WriteError(w http.ResponseWriter, status int, msg string) {
 	}
 }
 
-func WriteSuccess(w http.ResponseWriter, status int, msg string) {
+func ResWithSuccess(w http.ResponseWriter, status int, msg string) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(status)
 

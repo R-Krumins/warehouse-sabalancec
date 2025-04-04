@@ -14,7 +14,7 @@ func (s *Server) handleGetProduct(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 	tx, err := s.db.BeginTx(r.Context(), nil)
 	if err != nil {
-		WriteError(w, 500, fmt.Sprintf("could not begin transaction: %v", err))
+		ResWithError(w, 500, fmt.Sprintf("could not begin transaction: %v", err))
 		return
 	}
 	qtx := s.query.WithTx(tx)
@@ -25,19 +25,19 @@ func (s *Server) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleGetProductById(w http.ResponseWriter, r *http.Request) {
 	productId, err := GetIdFromRequest(r)
 	if err != nil {
-		WriteError(w, 400, fmt.Sprintf("malformed request body: %v", err))
+		ResWithError(w, 400, fmt.Sprintf("malformed request body: %v", err))
 		return
 	}
 
 	product, err := s.query.GetProductById(r.Context(), productId)
 	if err != nil {
-		WriteError(w, 500, fmt.Sprintf("could not retrieve product: %v", err))
+		ResWithError(w, 500, fmt.Sprintf("could not retrieve product: %v", err))
 		return
 	}
 
 	allergens, err := s.query.GetAllergensForProduct(r.Context(), productId)
 	if err != nil {
-		WriteError(w, 500, fmt.Sprintf("could not retrieve allergens: %v", err))
+		ResWithError(w, 500, fmt.Sprintf("could not retrieve allergens: %v", err))
 		return
 	}
 
@@ -49,5 +49,5 @@ func (s *Server) handleGetProductById(w http.ResponseWriter, r *http.Request) {
 		Allergens: allergens,
 	}
 
-	WriteJSON(w, 200, res)
+	ResWithJSON(w, 200, res)
 }

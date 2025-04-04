@@ -11,7 +11,7 @@ func (s *Server) handleGetAllergen(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleCreateAllergen(w http.ResponseWriter, r *http.Request) {
 	tx, err := s.db.BeginTx(r.Context(), nil)
 	if err != nil {
-		WriteError(w, 500, "could not begin transaction")
+		ResWithError(w, 500, "could not begin transaction")
 		return
 	}
 	qtx := s.query.WithTx(tx)
