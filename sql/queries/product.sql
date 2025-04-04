@@ -5,4 +5,5 @@ SELECT * FROM products;
 INSERT INTO products (name, img, price) VALUES (?, ?, ?) RETURNING *;
 
 -- name: GetProductById :one
-SELECT * FROM products WHERE id = ?;
+SELECT * FROM products
+WHERE id = ?; 

@@ -8,7 +8,10 @@ sql:
         package: "database"
         out: "internal/database"
         emit_json_tags: true
-        # overrides:
-        #   - db_type: "TEXT"
-        #     nullable: true
-        #     go_type: "string"
+        overrides:
+          - db_type: "TEXT"
+            nullable: true
+            go_type: "string"
+          - db_type: "INTEGER"
+            nullable: true
+            go_type: "int"

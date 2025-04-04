@@ -17,3 +17,9 @@ type Product struct {
 	Img   string  `json:"img"`
 	Price float64 `json:"price"`
 }
+
+type ProductAllergen struct {
+	ID         int64 `json:"id"`
+	ProductFk  int64 `json:"product_fk"`
+	AllergenFk int64 `json:"allergen_fk"`
+}
