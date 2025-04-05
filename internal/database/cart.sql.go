@@ -9,25 +9,50 @@ import (
 	"context"
 )
 
-const getAllCartItems = `-- name: GetAllCartItems :many
-SELECT id, user_uuid, product_fk, quantity FROM cart
-WHERE user_uuid = sql.arg(userId)
+const getCartForUser = `-- name: GetCartForUser :many
+SELECT 
+  c.id AS cart_item_id, 
+  p.id AS product_id, 
+  p.name, 
+  p.img, 
+  p.price AS price_per_unit, 
+  c.quantity, 
+  (p.price * c.quantity) AS sum_total
+FROM 
+  cart c
+INNER JOIN 
+  products p ON c.product_fk = p.id
+WHERE
+  c.user_uuid = ?1
 `
 
-func (q *Queries) GetAllCartItems(ctx context.Context) ([]Cart, error) {
-	rows, err := q.db.QueryContext(ctx, getAllCartItems)
+type GetCartForUserRow struct {
+	CartItemID   int64       `json:"cart_item_id"`
+	ProductID    int64       `json:"product_id"`
+	Name         string      `json:"name"`
+	Img          string      `json:"img"`
+	PricePerUnit float64     `json:"price_per_unit"`
+	Quantity     int64       `json:"quantity"`
+	SumTotal     interface{} `json:"sum_total"`
+}
+
+func (q *Queries) GetCartForUser(ctx context.Context, useruuid string) ([]GetCartForUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getCartForUser, useruuid)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Cart
+	var items []GetCartForUserRow
 	for rows.Next() {
-		var i Cart
+		var i GetCartForUserRow
 		if err := rows.Scan(
-			&i.ID,
-			&i.UserUuid,
-			&i.ProductFk,
+			&i.CartItemID,
+			&i.ProductID,
+			&i.Name,
+			&i.Img,
+			&i.PricePerUnit,
 			&i.Quantity,
+			&i.SumTotal,
 		); err != nil {
 			return nil, err
 		}

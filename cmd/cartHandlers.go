@@ -25,5 +25,12 @@ func (s *Server) handleAddToCart(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleGetCartForUser(w http.ResponseWriter, r *http.Request) {
 	userUuid, _ := r.Cookie("user_uuid")
-	ResWithJSON(w, 200, userUuid)
+
+	items, err := s.query.GetCartForUser(r.Context(), userUuid.Value)
+	if err != nil {
+		ResWithError(w, 500, fmt.Sprintf("Internal Server Error: %v", err))
+		return
+	}
+
+	ResWithJSON(w, 200, items)
 }
