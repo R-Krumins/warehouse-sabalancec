@@ -44,6 +44,9 @@ func NewServer(db *sql.DB, query *database.Queries, cfg Config) Server {
 	r.Get("/api/user/{uuid}", s.handleGetUser)
 	r.Post("/api/user", s.handleCreateUser)
 
+	r.Get("/api/cart", s.handleGetCartForUser)
+	r.Patch("/api/cart", s.handleAddToCart)
+
 	return s
 }
 

@@ -11,6 +11,13 @@ type Allergen struct {
 	Info string `json:"info"`
 }
 
+type Cart struct {
+	ID        int64  `json:"id"`
+	UserUuid  string `json:"user_uuid"`
+	ProductFk int64  `json:"product_fk"`
+	Quantity  int64  `json:"quantity"`
+}
+
 type Product struct {
 	ID    int64   `json:"id"`
 	Name  string  `json:"name"`
