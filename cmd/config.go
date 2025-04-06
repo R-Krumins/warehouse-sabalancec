@@ -10,7 +10,7 @@ type Config struct {
 	port       string
 	dbPath     string
 	authApiKey string
-	jwtSecret  string
+	jwtSecret  []byte
 }
 
 func loadConfig() Config {
@@ -20,7 +20,7 @@ func loadConfig() Config {
 		port:       getEnv("PORT"),
 		dbPath:     getEnv("DB_PATH"),
 		authApiKey: getEnv("AUTH_API_KEY"),
-		jwtSecret:  getEnv("JWT_SECRET"),
+		jwtSecret:  []byte(getEnv("JWT_SECRET")),
 	}
 }
 

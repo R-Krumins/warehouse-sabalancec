@@ -36,9 +36,9 @@ func HasPermission(role Role, perm Permission) bool {
 	return slices.Contains(permissionTable[role], perm)
 }
 
-func verifyToken(tokenString string) (*jwt.Token, error) {
+func verifyToken(tokenString string, secret []byte) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
-		return []byte("yoursecret"), nil
+		return secret, nil
 	})
 
 	// Check for verification errors
@@ -55,7 +55,7 @@ func verifyToken(tokenString string) (*jwt.Token, error) {
 	return token, nil
 }
 
-func WithAuthorizedToken(next http.Handler) http.Handler {
+func (s *Server) WithAuthorizedToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenStr, err := r.Cookie("jwt")
 		if err != nil {
@@ -63,7 +63,7 @@ func WithAuthorizedToken(next http.Handler) http.Handler {
 			return
 		}
 
-		token, err := verifyToken(tokenStr.Value)
+		token, err := verifyToken(tokenStr.Value, s.cfg.jwtSecret)
 		if err != nil {
 			ResWithError(w, 401, "Unauthorized. Invalid JWT Token.")
 			return

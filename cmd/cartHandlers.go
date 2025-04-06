@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Server) CartRouter(r chi.Router) {
-	r.Use(WithAuthorizedToken)
+	r.Use(s.WithAuthorizedToken)
 	r.Get("/", s.handleGetCartForUser)
 	r.Patch("/", s.handleAddToCart)
 }
