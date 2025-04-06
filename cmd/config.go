@@ -10,25 +10,24 @@ type Config struct {
 	port       string
 	dbPath     string
 	authApiKey string
+	jwtSecret  string
 }
 
 func loadConfig() Config {
 	godotenv.Load()
 
-	dbPath := os.Getenv("DB_PATH")
-	if dbPath == "" {
-		log.Fatal("No DB_PATH environment variable defined")
+	return Config{
+		port:       getEnv("PORT"),
+		dbPath:     getEnv("DB_PATH"),
+		authApiKey: getEnv("AUTH_API_KEY"),
+		jwtSecret:  getEnv("JWT_SECRET"),
 	}
+}
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("No PORT environment variable defined")
+func getEnv(name string) string {
+	env := os.Getenv(name)
+	if env == "" {
+		log.Fatalf("No %s enviroment variable defined!", name)
 	}
-
-	authApiKey := os.Getenv("AUTH_API_KEY")
-	if authApiKey == "" {
-		log.Fatal("No AUTH_API_KEY environment variable defined")
-	}
-
-	return Config{port, dbPath, authApiKey}
+	return env
 }

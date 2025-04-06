@@ -1,6 +1,13 @@
 package main
 
-import "slices"
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"slices"
+
+	"github.com/golang-jwt/jwt/v5"
+)
 
 type Role string
 
@@ -27,4 +34,55 @@ var permissionTable = map[Role][]Permission{
 
 func HasPermission(role Role, perm Permission) bool {
 	return slices.Contains(permissionTable[role], perm)
+}
+
+func verifyToken(tokenString string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
+		return []byte("yoursecret"), nil
+	})
+
+	// Check for verification errors
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the token is valid
+	if !token.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
+
+	// Return the verified token
+	return token, nil
+}
+
+func WithAuthorizedToken(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tokenStr, err := r.Cookie("jwt")
+		if err != nil {
+			ResWithError(w, 401, "Unauthorized. No JWT Token.")
+			return
+		}
+
+		token, err := verifyToken(tokenStr.Value)
+		if err != nil {
+			ResWithError(w, 401, "Unauthorized. Invalid JWT Token.")
+			return
+		}
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			ResWithError(w, 401, "Unauthorized. Invalid token claims.")
+			return
+		}
+
+		userUuid, exists := claims["user_uuid"].(string)
+		if !exists || userUuid == "" {
+			ResWithError(w, 401, "Unauthorized. Missing user identification.")
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "user_uuid", userUuid)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
